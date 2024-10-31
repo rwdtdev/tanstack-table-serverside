@@ -149,7 +149,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                     <CommandSeparator />
                     <CommandGroup>
                       <CommandItem
-                        onSelect={() => column?.setFilterValue(undefined)}
+                        onSelect={() => {
+                          column?.setFilterValue(undefined);
+                          const modSearchParams = createSearchParams(
+                            { status: null, page: 0 },
+                            searchParams
+                          );
+
+                          router.push(pathname + "?" + modSearchParams);
+                        }}
                         className="justify-center text-center"
                       >
                         Очистить фильтры
