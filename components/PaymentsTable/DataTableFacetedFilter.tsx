@@ -110,7 +110,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                           const filterValues = Array.from(selectedValues);
 
                           const modSearchParams = createSearchParams(
-                            { status: filterValues.join(".") },
+                            { status: filterValues.join("."), page: 0 },
                             searchParams
                           );
 

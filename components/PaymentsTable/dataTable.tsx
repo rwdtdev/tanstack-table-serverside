@@ -29,22 +29,27 @@ import { DataTableFacetedFilter } from "./DataTableFacetedFilter";
 import { filterableColumns } from "./columns";
 import { DataTableTextFilter } from "./DataTableTextFilter";
 import { Pagination } from "./Pagination";
+import { rowsPerPage } from "@/constants/paymentstableconsts";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  paymentServerResp: {
+    payments: TData[];
+    totalRecords: number;
+  };
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  paymentServerResp,
 }: DataTableProps<TData, TValue>) {
+  console.log("DataTable");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
+  const { payments, totalRecords } = paymentServerResp;
   const table = useReactTable({
-    data,
+    data: payments,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -59,8 +64,9 @@ export function DataTable<TData, TValue>({
     },
     manualPagination: true,
     manualFiltering: true,
-    manualSorting: false,
+    manualSorting: true,
   });
+  const totalPages = Math.ceil(totalRecords / rowsPerPage);
 
   const filterableColumnsList = filterableColumns();
 
@@ -163,7 +169,7 @@ export function DataTable<TData, TValue>({
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <Pagination />
+        <Pagination totalPages={totalPages} />
       </div>
     </div>
   );
