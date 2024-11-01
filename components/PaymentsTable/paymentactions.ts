@@ -6,11 +6,10 @@ import { Payment } from "@prisma/client";
 
 export async function getAllPayments() {
   const res = await prisma.payment.findMany();
-  console.log("🚀 ~ getAllPaymentsAction");
   return res;
 }
 
-type ResponsePaymentsWithParams = {
+export type ResponsePaymentsWithParams = {
   payments: Payment[];
   totalRecords: number;
 };
@@ -18,11 +17,7 @@ type ResponsePaymentsWithParams = {
 export async function getPaymentsWithParams(searchParams?: {
   [key: string]: string | string[] | undefined;
 }): Promise<ResponsePaymentsWithParams> {
-  const { page, email, status, sort } = searchParamsSchema.parse(searchParams);
-  console.log("🚀 ~ status:", status);
-
-  const statuses = statusSchema.parse(status?.split("."));
-  console.log("🚀 ~ statuses:", statuses);
+  const { page, email, statuses, sort } = parseSearchParams(searchParams);
 
   const payments = await prisma.payment.findMany({
     where: {
@@ -40,6 +35,29 @@ export async function getPaymentsWithParams(searchParams?: {
     },
   });
 
-  console.log("🚀 ~ payments:", payments.length);
   return { payments, totalRecords };
+}
+
+export async function getFilteredPaymentsIds(searchParams?: {
+  [key: string]: string | string[] | undefined;
+}): Promise<string[]> {
+  const { email, statuses } = parseSearchParams(searchParams);
+
+  const allFilteredPaymentsIdObjs = await prisma.payment.findMany({
+    where: {
+      status: { in: statuses },
+      email: { contains: email, mode: "insensitive" },
+    },
+    select: { id: true },
+  });
+
+  return allFilteredPaymentsIdObjs.map((item) => item.id);
+}
+
+function parseSearchParams(searchParams?: {
+  [key: string]: string | string[] | undefined;
+}) {
+  const { page, email, status, sort } = searchParamsSchema.parse(searchParams);
+  const statuses = statusSchema.parse(status?.split("."));
+  return { page, email, statuses, sort };
 }

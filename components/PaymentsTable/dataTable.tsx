@@ -3,7 +3,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   SortingState,
   useReactTable,
   VisibilityState,
@@ -37,35 +36,38 @@ interface DataTableProps<TData, TValue> {
     payments: TData[];
     totalRecords: number;
   };
+  selectedRows: string[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   paymentServerResp,
-}: DataTableProps<TData, TValue>) {
+  selectedRows,
+}: // setSelectedRows,
+DataTableProps<TData, TValue>) {
   console.log("DataTable");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const { payments, totalRecords } = paymentServerResp;
   const table = useReactTable({
     data: payments,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    // onSortingChange: setSorting,
+    // getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    // onRowSelectionChange: setRowSelection,
     state: {
-      sorting,
+      // sorting,
       // columnFilters,
       columnVisibility,
-      rowSelection,
+      // rowSelection,
     },
     manualPagination: true,
     manualFiltering: true,
     manualSorting: true,
   });
+
   const totalPages = Math.ceil(totalRecords / rowsPerPage);
 
   const filterableColumnsList = filterableColumns();
@@ -86,7 +88,15 @@ export function DataTable<TData, TValue>({
                 />
               )
           )}
-
+        {!!selectedRows?.length && (
+          <Button
+            onClick={() => {
+              console.log(selectedRows);
+            }}
+          >
+            Удалить
+          </Button>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -166,8 +176,7 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {selectedRows?.length || 0} of {totalRecords} row(s) selected.
         </div>
         <Pagination totalPages={totalPages} />
       </div>

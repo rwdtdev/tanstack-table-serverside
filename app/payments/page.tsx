@@ -1,7 +1,8 @@
-import { columns } from "@/components/PaymentsTable/columns";
-// import { payments } from "@/prisma/seed/tabledata";
-import { getPaymentsWithParams } from "./paymentactions";
-import { DataTable } from "@/components/PaymentsTable/DataTable";
+import {
+  getFilteredPaymentsIds,
+  getPaymentsWithParams,
+} from "../../components/PaymentsTable/paymentactions";
+import { PaymentTable } from "@/components/PaymentsTable/PaymentTable";
 
 export default async function PaymentsPage({
   searchParams,
@@ -9,13 +10,16 @@ export default async function PaymentsPage({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   // console.log("🚀 ~ PaymentsPage:");
+  const filteredPaymentsIdsProm = getFilteredPaymentsIds(searchParams);
+
   const paymentServerResp = await getPaymentsWithParams(searchParams);
   return (
-    <>
+    <div className="px-10 py-5">
       <h1>PaymentsPage</h1>
-      <div className="p-10">
-        <DataTable columns={columns} paymentServerResp={paymentServerResp} />
-      </div>
-    </>
+      <PaymentTable
+        paymentServerResp={paymentServerResp}
+        filteredPaymentsIdsProm={filteredPaymentsIdsProm}
+      />
+    </div>
   );
 }
