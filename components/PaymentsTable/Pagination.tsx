@@ -39,7 +39,7 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 
           router.push(pathname + "?" + modSearchParams);
         }}
-        disabled={false}
+        disabled={Number(page || 1) === totalPages}
       >
         Next
       </Button>

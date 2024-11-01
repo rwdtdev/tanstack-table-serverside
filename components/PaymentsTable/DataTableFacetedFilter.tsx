@@ -41,7 +41,6 @@ export function DataTableFacetedFilter<TData, TValue>({
   variant = "popover",
 }: DataTableFacetedFilter<TData, TValue>) {
   const pathname = usePathname();
-
   const searchParams = useSearchParams();
   const router = useRouter();
 
