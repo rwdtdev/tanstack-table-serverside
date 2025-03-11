@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.payment.deleteMany({}); // use with caution.
 
-  const amountOfPayments = 5050;
+  const amountOfPayments = 50500;
 
   const payments: Payment[] = [];
 

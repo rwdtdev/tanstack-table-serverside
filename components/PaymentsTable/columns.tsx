@@ -44,7 +44,7 @@ export function getColumnModel({
       header: () => (
         <Checkbox
           checked={
-            selectedRows.length === totalRecords ||
+            (selectedRows.length && selectedRows.length === totalRecords) ||
             (!!selectedRows.length && 'indeterminate')
           }
           onCheckedChange={async () => {
