@@ -1,7 +1,7 @@
 import {
   getFilteredPaymentsIds,
   getPaymentsWithParams,
-} from "../../components/PaymentsTable/paymentactions";
+} from "../../components/PaymentsTable/paymentsActions";
 import { PaymentTable } from "@/components/PaymentsTable/PaymentTable";
 
 export default async function PaymentsPage({

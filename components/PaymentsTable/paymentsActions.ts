@@ -1,8 +1,9 @@
-"use server";
-import { rowsPerPage } from "@/constants/paymentstableconsts";
-import { searchParamsSchema, statusSchema } from "@/lib/searchParamsSchema";
-import prisma from "@/prisma/db";
-import { Payment } from "@prisma/client";
+'use server';
+import { rowsPerPage } from '@/constants/paymentstableconsts';
+import { searchParamsSchema, statusSchema } from '@/lib/searchParamsSchema';
+import prisma from '@/prisma/db';
+import { Payment } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 
 export async function getAllPayments() {
   const res = await prisma.payment.findMany();
@@ -18,20 +19,45 @@ export async function getPaymentsWithParams(searchParams?: {
   [key: string]: string | string[] | undefined;
 }): Promise<ResponsePaymentsWithParams> {
   const { page, email, statuses, sort } = parseSearchParams(searchParams);
+  console.log('🚀 ~ sort:', sort);
 
-  const payments = await prisma.payment.findMany({
+  type QueryParams = {
+    where: {
+      status: {
+        in: ('pending' | 'processing' | 'success' | 'failed')[] | undefined;
+      };
+      email: {
+        contains: string | undefined;
+        mode: 'insensitive';
+      };
+    };
+    orderBy?: {
+      [x: string]: string;
+    };
+    skip: number;
+    take: number;
+  };
+
+  let queryParams: QueryParams = {
     where: {
       status: { in: statuses },
-      email: { contains: email, mode: "insensitive" },
+      email: { contains: email, mode: 'insensitive' },
     },
     skip: (Number(page) - 1) * rowsPerPage || 0,
     take: rowsPerPage,
-  });
+  };
+
+  if (sort) {
+    const [sortField, sortBy] = sort?.split('.');
+    queryParams = { ...queryParams, orderBy: { [sortField]: sortBy } };
+  }
+
+  const payments = await prisma.payment.findMany(queryParams);
 
   const totalRecords = await prisma.payment.count({
     where: {
       status: { in: statuses },
-      email: { contains: email, mode: "insensitive" },
+      email: { contains: email, mode: 'insensitive' },
     },
   });
 
@@ -46,7 +72,7 @@ export async function getFilteredPaymentsIds(searchParams?: {
   const allFilteredPaymentsIdObjs = await prisma.payment.findMany({
     where: {
       status: { in: statuses },
-      email: { contains: email, mode: "insensitive" },
+      email: { contains: email, mode: 'insensitive' },
     },
     select: { id: true },
   });
@@ -58,6 +84,14 @@ function parseSearchParams(searchParams?: {
   [key: string]: string | string[] | undefined;
 }) {
   const { page, email, status, sort } = searchParamsSchema.parse(searchParams);
-  const statuses = statusSchema.parse(status?.split("."));
+  const statuses = statusSchema.parse(status?.split('.'));
   return { page, email, statuses, sort };
+}
+
+export async function deletePayments(paymentsIds: string[]) {
+  console.log(paymentsIds);
+  await prisma.payment.deleteMany({
+    where: { id: { in: paymentsIds } },
+  });
+  revalidatePath('/payments', 'page');
 }

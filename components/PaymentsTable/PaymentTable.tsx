@@ -1,10 +1,10 @@
-"use client";
-import { ResponsePaymentsWithParams } from "@/components/PaymentsTable/paymentactions";
-import { DataTable } from "./DataTable";
-import { getColumnModel } from "./columns";
-import { useMemo, useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { Payment } from "@prisma/client";
+'use client';
+import { ResponsePaymentsWithParams } from '@/components/PaymentsTable/paymentsActions';
+import { DataTable } from './DataTable';
+import { getColumnModel } from './columns';
+import { useMemo, useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
+import { Payment } from '@prisma/client';
 
 type Props = {
   paymentServerResp: ResponsePaymentsWithParams;
@@ -32,7 +32,7 @@ export function PaymentTable({
       columns={columns}
       paymentServerResp={paymentServerResp}
       selectedRows={selectedRows}
-      //   setSelectedRows={setSelectedRows}
+      setSelectedRows={setSelectedRows}
     />
   );
 }

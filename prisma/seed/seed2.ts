@@ -1,13 +1,13 @@
-import { Payment, PaymentStatus, PrismaClient } from "@prisma/client";
-import { faker } from "@faker-js/faker";
-import { nanoid } from "nanoid";
+import { Payment, PaymentStatus, PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
+import { nanoid } from 'nanoid';
 
 const prisma = new PrismaClient();
 
 async function main() {
   await prisma.payment.deleteMany({}); // use with caution.
 
-  const amountOfPayments = 505;
+  const amountOfPayments = 5050;
 
   const payments: Payment[] = [];
 

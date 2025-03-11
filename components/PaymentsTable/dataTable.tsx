@@ -1,12 +1,11 @@
-"use client";
+'use client';
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  SortingState,
   useReactTable,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
 import {
   Table,
@@ -15,20 +14,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { DataTableFacetedFilter } from "./DataTableFacetedFilter";
-import { filterableColumns } from "./columns";
-import { DataTableTextFilter } from "./DataTableTextFilter";
-import { Pagination } from "./Pagination";
-import { rowsPerPage } from "@/constants/paymentstableconsts";
+} from '@/components/ui/dropdown-menu';
+import { DataTableFacetedFilter } from './DataTableFacetedFilter';
+import { filterableColumns } from './columns';
+import { DataTableTextFilter } from './DataTableTextFilter';
+import { Pagination } from './Pagination';
+import { rowsPerPage } from '@/constants/paymentstableconsts';
+import { deletePayments } from './paymentsActions';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,16 +37,16 @@ interface DataTableProps<TData, TValue> {
     totalRecords: number;
   };
   selectedRows: string[];
+  setSelectedRows: Dispatch<SetStateAction<string[]>>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   paymentServerResp,
   selectedRows,
-}: // setSelectedRows,
-DataTableProps<TData, TValue>) {
-  console.log("DataTable");
-  const [sorting, setSorting] = useState<SortingState>([]);
+  setSelectedRows,
+}: DataTableProps<TData, TValue>) {
+  console.log('DataTable');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const { payments, totalRecords } = paymentServerResp;
   const table = useReactTable({
@@ -74,57 +74,63 @@ DataTableProps<TData, TValue>) {
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className='flex items-center py-4'>
         <DataTableTextFilter />
         {filterableColumnsList.length &&
           filterableColumnsList.map(
             (column) =>
-              table.getColumn(column.id ? String(column.id) : "") && (
+              table.getColumn(column.id ? String(column.id) : '') && (
                 <DataTableFacetedFilter
                   key={String(column.id)}
-                  column={table.getColumn(column.id ? String(column.id) : "")}
+                  column={table.getColumn(column.id ? String(column.id) : '')}
                   title={column.title}
                   options={column.options}
                 />
               )
           )}
-        {!!selectedRows?.length && (
-          <Button
-            onClick={() => {
-              console.log(selectedRows);
-            }}
-          >
-            Удалить
-          </Button>
-        )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
+        <div className='ml-auto space-x-2'>
+          {!!selectedRows?.length && (
+            <Button
+              variant='destructive'
+              className='ml-auto'
+              onClick={() => {
+                console.log(selectedRows);
+                deletePayments(selectedRows);
+                setSelectedRows([]);
+              }}
+            >
+              Удалить
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='outline' className=''>
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className='capitalize'
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-      <div className="rounded-md border">
+      <div className='rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -149,7 +155,7 @@ DataTableProps<TData, TValue>) {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -165,7 +171,7 @@ DataTableProps<TData, TValue>) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className='h-24 text-center'
                 >
                   No results.
                 </TableCell>
@@ -174,8 +180,8 @@ DataTableProps<TData, TValue>) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="text-sm text-muted-foreground">
+      <div className='flex items-center justify-between space-x-2 py-4'>
+        <div className='text-sm text-muted-foreground'>
           {selectedRows?.length || 0} of {totalRecords} row(s) selected.
         </div>
         <Pagination totalPages={totalPages} />
