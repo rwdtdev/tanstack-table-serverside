@@ -16,7 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -29,6 +29,8 @@ import { DataTableTextFilter } from './DataTableTextFilter';
 import { Pagination } from './Pagination';
 import { rowsPerPage } from '@/constants/paymentstableconsts';
 import { deletePayments } from './paymentsActions';
+import { CSSTransition } from 'react-transition-group';
+import './paymentsTable.css';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -48,6 +50,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   console.log('DataTable');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const refDelBtn = useRef<HTMLButtonElement | null>(null);
   const { payments, totalRecords } = paymentServerResp;
   const table = useReactTable({
     data: payments,
@@ -89,10 +92,35 @@ export function DataTable<TData, TValue>({
               )
           )}
         <div className='ml-auto space-x-2'>
-          {!!selectedRows?.length && (
+          {/* <Button
+            variant='destructive'
+            className={twJoin(
+              'ml-auto transition-opacity shadow-md',
+              selectedRows?.length ? 'opacity-100' : 'opacity-0 cursor-default'
+            )}
+            onClick={() => {
+              console.log(selectedRows);
+              deletePayments(selectedRows);
+              setSelectedRows([]);
+            }}
+          >
+            Удалить
+          </Button> */}
+
+          <CSSTransition
+            in={Boolean(selectedRows?.length)}
+            nodeRef={refDelBtn}
+            timeout={300}
+            classNames='delete-row-btn'
+            unmountOnExit
+            onEnter={() => console.log('transition onEnter')}
+            onExited={() => console.log('transition onExited')}
+            on
+          >
             <Button
               variant='destructive'
-              className='ml-auto'
+              className='shadow-md'
+              ref={refDelBtn}
               onClick={() => {
                 console.log(selectedRows);
                 deletePayments(selectedRows);
@@ -101,7 +129,8 @@ export function DataTable<TData, TValue>({
             >
               Удалить
             </Button>
-          )}
+          </CSSTransition>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='outline' className=''>
