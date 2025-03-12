@@ -2,23 +2,21 @@
 import { createSearchParams } from '@/lib/createSearchParams';
 import { Button } from '../ui/button';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { CSSTransition } from 'react-transition-group';
 import './paymentsTable.css';
-import { useRef } from 'react';
+import { twJoin } from 'tailwind-merge';
 
 export function Pagination({ totalPages }: { totalPages: number }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const page = searchParams.get('page');
-  const refPrevBtn = useRef<HTMLButtonElement | null>(null);
   return (
     <div className='space-x-2 flex-grow flex'>
       <div className='inline-block text-sm text-muted-foreground align-baseline mx-auto'>
         page {page || 1} of {totalPages}
       </div>
       <div className='w-20'>
-        <CSSTransition
+        {/* <CSSTransition
           in={Boolean(page)}
           nodeRef={refPrevBtn}
           timeout={300}
@@ -44,7 +42,26 @@ export function Pagination({ totalPages }: { totalPages: number }) {
           >
             Previous
           </Button>
-        </CSSTransition>
+        </CSSTransition> */}
+        <Button
+          className={twJoin(
+            'scale-0 transition-transform select-none',
+            Boolean(page) && 'scale-100'
+          )}
+          variant='outline'
+          size='sm'
+          onClick={() => {
+            const modSearchParams = createSearchParams(
+              { page: page === '2' ? '' : Number(page) - 1 },
+              searchParams
+            );
+
+            router.push(pathname + '?' + modSearchParams);
+          }}
+          disabled={!page}
+        >
+          Previous
+        </Button>
       </div>
       {/* <Button
         variant='outline'
@@ -62,6 +79,7 @@ export function Pagination({ totalPages }: { totalPages: number }) {
         Previous
       </Button> */}
       <Button
+        className='  select-none'
         variant='outline'
         size='sm'
         onClick={() => {
