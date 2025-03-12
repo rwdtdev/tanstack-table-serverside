@@ -85,6 +85,7 @@ function parseSearchParams(searchParams?: {
 }) {
   const { page, email, status, sort } = searchParamsSchema.parse(searchParams);
   const statuses = statusSchema.parse(status?.split('.'));
+
   return { page, email, statuses, sort };
 }
 

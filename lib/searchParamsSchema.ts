@@ -1,9 +1,14 @@
-import { PaymentStatus } from "@prisma/client";
-import { z } from "zod";
+import { PaymentStatus } from '@prisma/client';
+import { z } from 'zod';
 
 export const searchParamsSchema = z.object({
   page: z.string().optional(),
-  sort: z.string().optional(),
+  sort: z.union([
+    z.literal('amount.asc'),
+    z.literal('amount.desc'),
+    z.literal('email.asc'),
+    z.literal('email.desc'),
+  ]),
   email: z.string().optional(),
   status: z.string().optional(),
 });
