@@ -15,14 +15,14 @@ export function DataTableTextFilter() {
   useDebounce(inputValue);
 
   return (
-    <div className='relative w-full max-w-sm mr-3'>
+    <div className='relative w-full lg:max-w-sm mr-0 lg:mr-3 mb-3 lg:mb-0'>
       <Input
         placeholder='Filter emails...'
         value={inputValue || ''}
         onChange={(event) => {
           setInputValue(event.target.value);
         }}
-        className='max-w-sm mr-2 '
+        className='lg:max-w-sm mr-2 '
       />
       {inputValue && (
         <Button

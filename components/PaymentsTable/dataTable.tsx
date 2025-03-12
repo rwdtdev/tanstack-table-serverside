@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className='flex items-center py-4'>
+      <div className='flex items-center py-4 flex-wrap '>
         <DataTableTextFilter />
         {filterableColumnsList.length &&
           filterableColumnsList.map(
