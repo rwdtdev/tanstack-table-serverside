@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { CircleX } from 'lucide-react';
+import { twJoin } from 'tailwind-merge';
 
 export function DataTableTextFilter() {
   const searchParams = useSearchParams();
@@ -24,17 +25,20 @@ export function DataTableTextFilter() {
         }}
         className='lg:max-w-sm mr-2 '
       />
-      {inputValue && (
-        <Button
-          type='button'
-          variant='ghost'
-          size='icon'
-          className='absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-transparent'
-          onClick={() => setInputValue('')}
-        >
-          <CircleX />
-        </Button>
-      )}
+      <Button
+        type='button'
+        variant='ghost'
+        size='icon'
+        className={twJoin(
+          'absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-transparent transition-opacity ',
+          inputValue
+            ? 'opacity-100 duration-500'
+            : 'opacity-0 cursor-default pointer-events-none'
+        )}
+        onClick={() => setInputValue('')}
+      >
+        <CircleX />
+      </Button>
     </div>
   );
 }

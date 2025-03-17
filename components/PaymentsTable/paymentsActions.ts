@@ -31,9 +31,13 @@ export async function getPaymentsWithParams(searchParams?: {
         mode: 'insensitive';
       };
     };
-    orderBy?: {
-      [x: string]: string;
-    };
+    orderBy?:
+      | {
+          [x: string]: string;
+        }
+      | {
+          [x: string]: string;
+        }[];
     skip: number;
     take: number;
   };
@@ -49,7 +53,16 @@ export async function getPaymentsWithParams(searchParams?: {
 
   if (sort) {
     const [sortField, sortBy] = sort?.split('.');
-    queryParams = { ...queryParams, orderBy: { [sortField]: sortBy } };
+    if (sortField === 'amount') {
+      queryParams = {
+        ...queryParams,
+        orderBy: [{ amount: sortBy }, { email: 'asc' }],
+      };
+    } else {
+      {
+        queryParams = { ...queryParams, orderBy: { [sortField]: sortBy } };
+      }
+    }
   }
 
   const payments = await prisma.payment.findMany(queryParams);
