@@ -13,17 +13,11 @@ import { MoreHorizontal } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dispatch, SetStateAction } from 'react';
 import { SortBtn } from './SortBtn';
+import { Payment } from '@prisma/client';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type PaymentStatus = 'pending' | 'processing' | 'success' | 'failed';
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: PaymentStatus;
-  email: string;
-};
 
 type Props = {
   selectedRows: string[];

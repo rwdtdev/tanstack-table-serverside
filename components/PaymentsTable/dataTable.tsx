@@ -32,6 +32,7 @@ import { deletePayments } from './paymentsActions';
 import './paymentsTable.css';
 import { twJoin } from 'tailwind-merge';
 import { Flipper, Flipped } from 'react-flip-toolkit';
+import { Payment } from '@prisma/client';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,7 +44,7 @@ interface DataTableProps<TData, TValue> {
   setSelectedRows: Dispatch<SetStateAction<string[]>>;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends Payment, TValue>({
   columns,
   paymentServerResp,
   selectedRows,
@@ -162,8 +163,8 @@ export function DataTable<TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <Flipped key={row.original.id} flipId={row.original.id}>
                     <TableRow
-                      className='bg-white'
-                      key={row.id}
+                      className='bg-white animate-opacity-inc'
+                      key={row.original.id}
                       data-state={row.getIsSelected() && 'selected'}
                     >
                       {row.getVisibleCells().map((cell) => (
