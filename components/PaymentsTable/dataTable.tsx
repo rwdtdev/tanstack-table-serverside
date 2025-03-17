@@ -163,7 +163,7 @@ export function DataTable<TData extends Payment, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <Flipped key={row.original.id} flipId={row.original.id}>
                     <TableRow
-                      className='bg-white animate-opacity-inc'
+                      className='animate-opacity-inc'
                       key={row.original.id}
                       data-state={row.getIsSelected() && 'selected'}
                     >
