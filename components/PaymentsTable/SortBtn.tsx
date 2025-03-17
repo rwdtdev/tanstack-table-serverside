@@ -13,7 +13,7 @@ export function SortBtn({ name }: { name: string }) {
   return (
     <Button
       variant='ghost'
-      className='ml-auto pl-0 hover:bg-transparent'
+      className='ml-auto px-0 hover:bg-transparent'
       onClick={() => {
         let ascDesc = searchParams.get('sort');
         console.log('sort by ', ascDesc);
