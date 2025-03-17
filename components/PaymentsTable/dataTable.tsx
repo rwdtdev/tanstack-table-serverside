@@ -33,6 +33,7 @@ import './paymentsTable.css';
 import { twJoin } from 'tailwind-merge';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 import { Payment } from '@prisma/client';
+import { delay } from '@/lib/delay';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,7 +44,8 @@ interface DataTableProps<TData, TValue> {
   selectedRows: string[];
   setSelectedRows: Dispatch<SetStateAction<string[]>>;
 }
-
+// !!! TData extends Payment here needs to extends TData with our data type !!!
+// otherwise row.original doesn't have types from our data
 export function DataTable<TData extends Payment, TValue>({
   columns,
   paymentServerResp,
@@ -52,6 +54,7 @@ export function DataTable<TData extends Payment, TValue>({
 }: DataTableProps<TData, TValue>) {
   console.log('DataTable');
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [deleteRows, setDeleteRows] = useState(false);
   // const refDelBtn = useRef<HTMLButtonElement | null>(null);
   const { payments, totalRecords } = paymentServerResp;
   const table = useReactTable({
@@ -101,9 +104,13 @@ export function DataTable<TData extends Payment, TValue>({
                 'ml-auto transition-transform shadow-md',
                 selectedRows?.length ? 'scale-100' : 'scale-0 cursor-default'
               )}
-              onClick={() => {
+              onClick={async () => {
                 console.log(selectedRows);
+                setDeleteRows(true);
+                await delay(500);
                 deletePayments(selectedRows);
+                await delay(100);
+                setDeleteRows(false);
                 setSelectedRows([]);
               }}
             >
@@ -145,14 +152,16 @@ export function DataTable<TData extends Payment, TValue>({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
+                      <Flipped key={header.id} flipId={header.id}>
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      </Flipped>
                     );
                   })}
                 </TableRow>
@@ -163,7 +172,12 @@ export function DataTable<TData extends Payment, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <Flipped key={row.original.id} flipId={row.original.id}>
                     <TableRow
-                      className='animate-opacity-inc'
+                      className={twJoin(
+                        'animate-opacity-inc',
+                        selectedRows.includes(row.original.id) && deleteRows
+                          ? 'opacity-0'
+                          : 'opacity-100'
+                      )}
                       key={row.original.id}
                       data-state={row.getIsSelected() && 'selected'}
                     >
